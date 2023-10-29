@@ -2,18 +2,222 @@
   <head>
     <title>@skvllface</title>
     <script src="https://cdn.usefathom.com/script.js" data-site="RKVTIEQP" defer></script>
+    <style type="text/css">
+      html {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #222;
+        color: #fff;
+      }
+      
+      body {
+        padding: 4em;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace
+      }
+      
+      h1 {
+        margin-bottom: 1em;
+      }
+      
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      
+      li {
+        margin-bottom: 1em;
+      }
+      
+      a {
+        border: solid 1px #444;
+        background-color: #333;
+        padding: 1rem;
+        text-transform: uppercase;
+        width: 100%;
+        display: block;
+        color: #eee;
+        text-decoration: none;
+        border-radius: 8px;
+      }
+      
+      a:hover, a:active, a:focus {
+        background-color: #111;
+      }
+    </style>
   </head>
   <body>
 
     <h1>hi, i’m skully ♥️</h1>
 
-    <ul>
+    <ul style="list-style: none">
       <li>
-        <a href='https://drive.google.com/drive/folders/11_5E_eBtE-XUFGy-d831VfaTPJyhmoIM?usp=drive_link'>download 🇵🇸 action calendar images</a>
+        <a href='https://drive.google.com/drive/folders/11_5E_eBtE-XUFGy-d831VfaTPJyhmoIM?usp=drive_link'>download 🇵🇸 action calendar images <b style="font-family: 'arial'">&darr;</b></a>
       </li>
       <li>
-        <a href='https://216.show'>visit 216.show</a>
+        <a href='https://216.show'>visit 216.show <b style="font-family: 'arial'">&rarr;</b></a>
       </li>
     </ul>
   </body>
+
+  <script>
+    var n_sparkles = 100;
+    var sparkles = new Array(n_sparkles);
+
+    var mouse = {
+      x: 0,
+      y: 0,
+      moved: false
+    }
+
+    window.onmousemove = function(e) {
+      var new_x = e.pageX;
+      var new_y = e.pageY;
+
+      mouse = {
+        x: new_x,
+        y: new_y,
+        moved: (mouse.x !== new_x ||
+                mouse.y !== new_y)
+      };
+    }
+
+    window.onload = function() {
+      for(var i=0; i < n_sparkles; i++) {
+        var sparkleDiv = createSparkle(0, 0);
+        document.body.appendChild(sparkleDiv);
+        sparkles[i] = {
+          element: sparkleDiv,
+          x: 0,
+          y: 0,
+          size: 0,
+          visible: false,
+          horizontal_speed: randomHorizontalSpeed(),
+          color: aPleasingColor()
+        }
+      }
+
+      doSparkles();
+    }
+
+    function doSparkles() {
+      var itsTimeForANewSparkle = mouse.moved;
+      // this function is called more frequently
+      // than the mouse moves
+      mouse.moved = false;
+
+      for(var i=0; i < n_sparkles; i++) {
+        var sparkle = sparkles[i];
+
+        if (itsTimeForANewSparkle) {
+          if (sparkle.size < 1) {
+            resetSparkle(sparkle);
+            itsTimeForANewSparkle = false;
+          }
+        }
+
+        if (sparkle.visible) {
+          moveSparkle(sparkle);
+          shrinkSparkle(sparkle);
+        }
+        updateSparkleElement(sparkle);
+      }
+
+      setTimeout("doSparkles()", 40);
+    }
+
+    function moveSparkle(sparkle) {
+      sparkle.x += sparkle.horizontal_speed;
+      sparkle.y += 1 + Math.random()*3;
+    }
+
+    function shrinkSparkle(sparkle) {
+      sparkle.size -= 1;
+
+      var style = sparkle.element.style;
+      if (sparkle.size < 75) {
+        style.clip = "rect(1px, 4px, 4px, 1px)";
+      }
+      if (sparkle.size < 50) {
+        style.clip = "rect(2px, 4px, 4px, 2px)";
+        style.backgroundColor = sparkle.color;
+      }
+      if (sparkle.size < 25) {
+        style.clip = "rect(2px, 3px, 3px, 2px)";
+      }
+      if (sparkle.size < 1) {
+        sparkle.visible = false;
+      }
+    }
+
+    function updateSparkleElement(sparkle) {
+      var style = sparkle.element.style;
+      style.left = sparkle.x+"px";
+      style.top = sparkle.y+"px";
+
+      if (sparkle.visible) {
+        style.visibility = "visible"
+      } else {
+        style.visibility = "hidden"
+      }
+    }
+
+    function createSparkle(x,y) {
+      var boundingBox = createDiv(x, y, 5, 5);
+      boundingBox.style.backgroundColor = "transparent";
+
+      var down = createDiv(0, 2, 5, 1);
+      var across = createDiv(2, 0, 1, 5);
+
+      boundingBox.appendChild(down);
+      boundingBox.appendChild(across);
+
+      return boundingBox;
+    }
+
+    function resetSparkle(sparkle) {
+      sparkle.visible = true;
+      sparkle.x = mouse.x;
+      sparkle.y = mouse.y;
+      sparkle.horizontal_speed = randomHorizontalSpeed();
+      sparkle.size = 100;
+      sparkle.element.style.clip = "rect(0px, 5px, 5px, 0px)";
+      sparkle.element.style.backgroundColor = "transparent";
+      sparkle.color = aPleasingColor();
+      sparkle.element.childNodes[0].style.backgroundColor = sparkle.color;
+      sparkle.element.childNodes[1].style.backgroundColor = sparkle.color;
+    }
+
+    function createDiv(x,y,w,h) {
+      var div = document.createElement("div");
+      div.style.position = "absolute";
+      div.style.top = y + "px";
+      div.style.left = x + "px";
+      div.style.overflow = "hidden";
+      div.style.height = h + "px";
+      div.style.width = w + "px";
+      return div;
+    }
+
+    function aPleasingColor() {
+      var colorSet = [
+        '#ff64c3', '#19c1df', '#9655c4',
+        '#ff97d7', '#98fff7', '#d598ff'
+      ];
+
+      var colorRandom = colorSet[Math.floor(Math.random() * colorSet.length)];
+      return colorRandom;
+    }
+
+    function randomHorizontalSpeed() {
+      var dir = Math.random() > 0.5 ? 1 : -1;
+      var speed = randomInt(3);
+      return speed/5 * dir;
+    }
+
+    function randomInt(exclusiveMaximum) {
+      return Math.floor(Math.random() * exclusiveMaximum);
+    }
+  </script>
 </html>
